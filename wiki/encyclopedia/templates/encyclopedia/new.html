@@ -6,10 +6,12 @@
 
 {% block body %}
     <h1>Create a new entry</h1>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
     <form action="{% url 'new-entry' %}" method="post">
         {% csrf_token %}
         {{ form }}
         <input type="submit" value="Save entry">
     </form>
-    <p>{{ error }}</p>
 {% endblock %}
