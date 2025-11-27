@@ -14,6 +14,10 @@ class NewEntryForm(forms.Form):
     new_title = forms.CharField(label="Enter title", max_length=50)
     new_markdown = forms.CharField(label="Enter the markdown of the wiki", widget=forms.Textarea)
 
+# edit entry form
+class EditEntryForm(forms.Form):
+    edit_markdown = forms.CharField(label="Edit the markdown of the wiki here", widget=forms.Textarea)
+
 def index(request):
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
@@ -69,5 +73,31 @@ def new(request):
     else:
         return render(request, "encyclopedia/new.html", {
             "form": NewEntryForm
+        })
+    
+def edit(request, title):
+    if request.method == 'POST':
+        form = EditEntryForm(request.POST)
+
+        if form.is_valid():
+            markdown = form.cleaned_data["edit_markdown"]
+
+            util.save_entry(title, markdown)
+
+            entry = util.get_entry(title)
+
+            return render(request, "encyclopedia/entry.html", {
+                "title": title,
+                "text": toHTML(entry)                
+            })
+    else:
+        entry = util.get_entry(title)
+        form = EditEntryForm(initial={
+            'edit_markdown': entry
+        })
+
+        return render(request, "encyclopedia/edit.html", {
+            "title": title,
+            "form": form
         })
         
