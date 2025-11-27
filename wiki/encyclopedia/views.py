@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django import forms
 
 from . import util
 from markdown2 import Markdown
@@ -9,6 +10,9 @@ def toHTML(file):
     return markdowner.convert(file)
 
 # new entry form
+class NewEntryForm(forms.Form):
+    new_title = forms.CharField(label="Enter title", max_length=50)
+    new_markdown = forms.CharField(label="Enter the markdown of the wiki", widget=forms.Textarea)
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -39,8 +43,31 @@ def search(request):
     })
 
 def new(request):
-    return render(request, "encyclopedia/new.html", {
-            "results": matching_entries,
-            "query" : query
-    })
+    if request.method == 'POST':
+        form = NewEntryForm(request.POST)
+        all_entries = util.list_entries()
+
+        if form.is_valid():
+            title = form.cleaned_data["new_title"]
+            markdown = form.cleaned_data["new_markdown"]
+
+            for r in all_entries:
+                if r.lower() == title:
+                    error = "Entry title already existing"
+                    return render(request, "encyclopedia/new.html", {
+                        "form": form,
+                        "error": error
+                    })
+            
+            util.save_entry(title, markdown)
+
+            new_entry = util.get_entry(title)
+            return render(request, "encyclopedia/entry.html", {
+                "title": title,
+                "text": toHTML(new_entry)                
+            })
+    else:
+        return render(request, "encyclopedia/new.html", {
+            "form": NewEntryForm
+        })
         
