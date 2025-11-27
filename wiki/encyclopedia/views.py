@@ -1,7 +1,14 @@
 from django.shortcuts import render, redirect
 
 from . import util
+from markdown2 import Markdown
 
+# generic function to convert .md to html
+def toHTML(file):
+    markdowner = Markdown(extras=[""])
+    return markdowner.convert(file)
+
+# new entry form
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -9,8 +16,10 @@ def index(request):
     })
 
 def entry(request, title):
+    entry = util.get_entry(title)
     return render(request, "encyclopedia/entry.html", {
-        "entry": util.get_entry(title)
+        "title": title,
+        "text": toHTML(entry)
     })
 
 def search(request):
@@ -25,6 +34,12 @@ def search(request):
             matching_entries.append(r)
 
     return render(request, "encyclopedia/search.html", {
+            "results": matching_entries,
+            "query" : query
+    })
+
+def new(request):
+    return render(request, "encyclopedia/new.html", {
             "results": matching_entries,
             "query" : query
     })
