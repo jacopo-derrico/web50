@@ -27,12 +27,19 @@ def index(request):
         "entries": util.list_entries()
     })
 
+def error(request):
+    return render(request, "encyclopedia/404.html")
+
 def entry(request, title):
     entry = util.get_entry(title)
-    return render(request, "encyclopedia/entry.html", {
-        "title": title,
-        "text": toHTML(entry)
-    })
+
+    if entry == None:
+        return redirect('error')
+    else:
+        return render(request, "encyclopedia/entry.html", {
+            "title": title,
+            "text": toHTML(entry)
+        })
 
 def search(request):
     query = request.GET.get('q').lower()

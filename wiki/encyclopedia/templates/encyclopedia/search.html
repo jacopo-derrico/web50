@@ -6,14 +6,18 @@
 
 {% block body %}
     <h1>Your search results for {{query}}:</h1>
-    <ul>
-        {% for result in results %}
-            <li>
-                <a href="{% url 'entry' result %}">
-                    {{ result }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+    {% if results %}
+        <ul>
+            {% for result in results %}
+                <li>
+                    <a href="{% url 'entry' result %}">
+                        {{ result }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No pages found for "{{query}}"</p>
+    {% endif %}
 
 {% endblock %}
