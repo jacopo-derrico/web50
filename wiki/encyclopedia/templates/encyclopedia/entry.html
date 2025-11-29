@@ -5,8 +5,10 @@
 {% endblock %}
 
 {% block body %}
-    <button>
-        <a href="{% url 'edit' title %}">Edit this page</a>
-    </button>
+    <a href="{% url 'edit' title %}">
+        <button>
+            Edit this page
+        </button>
+    </a>
     {{text|safe}}
 {% endblock %}
