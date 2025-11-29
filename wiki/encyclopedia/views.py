@@ -67,7 +67,7 @@ def new(request):
             markdown = form.cleaned_data["new_markdown"]
 
             for r in all_entries:
-                if r.lower() == title:
+                if r.lower() == title.lower():
                     error = "Entry title already existing"
                     return render(request, "encyclopedia/new.html", {
                         "form": form,
